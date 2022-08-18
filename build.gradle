@@ -1,0 +1,64 @@
+plugins {
+    id("groovy")
+    id("com.github.johnrengelman.shadow") version "7.1.2"
+    id("io.micronaut.application") version "3.5.1"
+    id 'com.vaadin' version '0.14.7.3'
+}
+
+version = "0.1"
+group = "com.example"
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    platform(implementation('com.vaadin:vaadin-bom:14.8.14'))
+    implementation(implementation('org.springframework.boot:spring-boot-dependencies:2.6.10'))
+    implementation('com.vaadin:vaadin-spring-boot-starter') {
+//         Webjars are only needed when running in Vaadin 13 compatibility mode
+        ["com.vaadin.webjar", "org.webjars.bowergithub.insites",
+         "org.webjars.bowergithub.polymer", "org.webjars.bowergithub.polymerelements",
+         "org.webjars.bowergithub.vaadin", "org.webjars.bowergithub.webcomponents"]
+                .forEach { group -> exclude(group: group) }
+    }
+    compileOnly("io.micronaut.spring:micronaut-spring-boot")
+    implementation("io.micronaut:micronaut-http-client")
+    implementation("io.micronaut:micronaut-jackson-databind")
+    implementation("io.micronaut.groovy:micronaut-runtime-groovy")
+    implementation("jakarta.annotation:jakarta.annotation-api")
+    implementation("org.springframework.boot:spring-boot-starter")
+    implementation("org.springframework.boot:spring-boot-starter-web")
+    compileOnly("io.micronaut:micronaut-http-validation")
+    compileOnly("io.micronaut.spring:micronaut-spring-annotation")
+    compileOnly("io.micronaut.spring:micronaut-spring-boot-annotation")
+    runtimeOnly("ch.qos.logback:logback-classic")
+    runtimeOnly("io.micronaut.spring:micronaut-spring-boot")
+    implementation("io.micronaut:micronaut-validation")
+    implementation 'org.springframework:spring-webmvc:5.3.22'
+
+}
+
+
+application {
+    mainClass.set("com.example.Application")
+}
+java {
+    sourceCompatibility = JavaVersion.toVersion("17")
+    targetCompatibility = JavaVersion.toVersion("17")
+}
+
+graalvmNative.toolchainDetection = false
+micronaut {
+    runtime("netty")
+    testRuntime("spock2")
+    processing {
+        incremental(true)
+        annotations("com.example.*")
+    }
+}
+
+
+vaadin {
+	pnpmEnable = false
+}
